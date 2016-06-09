@@ -7,4 +7,4 @@ https://github.com/gibiansky/experiments/blob/master/quadcopter/matlab/simulate.
 A very good an detailed explanation of the code:
 http://andrew.gibiansky.com/blog/physics/quadcopter-dynamics
 
-In contrast to the above link a right handed coordinate system is used.
+In contrast to the link above a right handed coordinate system is used.
