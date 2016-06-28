@@ -14,8 +14,8 @@ class Controller():
     
         # Compute PD error and inputs.
         err = Kd * thetadot + Kp * state['integral']
-        print("err: ", err)
-        print("state: integral: ", state['integral'])
+#         print("err: ", err)
+#         print("state: integral: ", state['integral'])
         controller_output = self.err2inputs(state, err, total)
     
         # Update controller state.

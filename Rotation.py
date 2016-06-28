@@ -1,8 +1,7 @@
 import numpy
 import math
 
-class Rotation:
-    
+class Rotation:    
     def inv_rotate(self, theta):
         return numpy.linalg.inv(self.rotate(theta))
     
