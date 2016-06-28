@@ -3,9 +3,12 @@ import math
 
 class Rotation:
     
+    def inv_rotate(self, theta):
+        return numpy.linalg.inv(self.rotate(theta))
+    
     def rotate(self, theta):
         #R = _rotationZ(theta[0]).dot(_rotationX(theta[1]).dot(_rotationZ(theta[2])))
-        R = self._rotationZ(theta[0]).dot(self._rotationX(theta[1]).dot(self._rotationX(theta[2])))
+        R = self._rotationZ(theta[2]).dot(self._rotationY(theta[1]).dot(self._rotationX(theta[0])))
         return R
         
     def _rotationX(self, angle):
