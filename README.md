@@ -15,7 +15,10 @@ In contrast to the link above a right handed coordinate system is used.
 needs numpy
   <br />
   <br />
-
+  
+  For 3d viualization of the quadcopter set enable3d = True in ProcessPlotter.py. It will slow down the visualization!
+  <br />
+  <br />
 Some remarks:
 Speeding up Matplotlib
 
