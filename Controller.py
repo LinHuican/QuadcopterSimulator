@@ -44,6 +44,15 @@ class Controller():
         inputs[3] = total/4 + e3 * Iz/(4 * b) + (e2 * Iy)/(2 * k * L)
         
         return inputs
+
+class AltitudeController():
+    integralAltitude = 0.0
+    def pi_controller(self, x, setpoint, Kp, Ki):
+        error = numpy.zeros((3,1))
+        error[2] = setpoint[2] - x[2]
+        AltitudeController.integralAltitude = AltitudeController.integralAltitude + Ki * error
+        output = Kp * error + AltitudeController.integralAltitude
+        return output
     
     
 class PositionController():
@@ -54,3 +63,5 @@ class PositionController():
         error[1] = setpoint[1] - x[1]
         output = Kp * error
         return output
+    
+    

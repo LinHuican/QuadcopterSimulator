@@ -6,13 +6,14 @@ import Rotation
 import numpy
 import collections
 
-enable3d = True
+enable3d = False
 
-Number_of_datapoints = 100
+Number_of_datapoints = 140
 
 class ProcessPlotter(object):
     def __init__(self):
-        self.errors_controller = collections.deque(Number_of_datapoints*[numpy.zeros((3,1))], Number_of_datapoints)
+        self.errors_controller_theta = collections.deque(Number_of_datapoints*[numpy.zeros((3,1))], Number_of_datapoints)
+        self.errors_controller_xy = collections.deque(Number_of_datapoints*[numpy.zeros((3,1))], Number_of_datapoints)
         self.time_stamps = collections.deque(Number_of_datapoints*[0], Number_of_datapoints)
         pass
 
@@ -42,7 +43,8 @@ class ProcessPlotter(object):
                 a = command['a']
                 theta = command['theta']
                 t = command['t']
-                self.errors_controller.append(command['error_controller'])
+                self.errors_controller_theta.append(command['error_controller'])
+                self.errors_controller_xy.append(command['x_err'])
                 #temp = command['error_controller']
                 
                 self.time_stamps.append(t)
@@ -77,6 +79,7 @@ class ProcessPlotter(object):
                 self.line1_3.set_ydata([ypos, ypos + xBody_current[1]])
 
             
+                self.ax_xzplane.set_title("z: " + str(zpos))
                 self.line2_1.set_xdata([xpos, xpos + 4*a[0]])
                 self.line2_1.set_ydata([zpos, zpos + 4*a[2]])
                 self.line2_2.set_xdata([xpos, xpos + zBody_current[0]])
@@ -84,19 +87,29 @@ class ProcessPlotter(object):
                 self.line2_3.set_xdata([xpos, xpos + xBody_current[0]])
                 self.line2_3.set_ydata([zpos, zpos + xBody_current[2]])
                 
+                
+                self.ax_err_xyplane.set_title("error - plane   total pid error: " + str(command['total_pid_error'][0][0]) + " ," + str(command['total_pid_error'][1][0])  + " ," + str(command['total_pid_error'][2][0])  )
                 # plot error ins orientation
                 self.line3_1.set_xdata(list(self.time_stamps))
                 self.line3_2.set_xdata(list(self.time_stamps))
                 self.line3_3.set_xdata(list(self.time_stamps))
-                self.line3_1.set_ydata(numpy.array(self.errors_controller)[:,0])
-                self.line3_2.set_ydata(numpy.array(self.errors_controller)[:,1])
-                self.line3_3.set_ydata(numpy.array(self.errors_controller)[:,2])
+                self.line3_1.set_ydata(numpy.array(self.errors_controller_theta)[:,0])
+                self.line3_2.set_ydata(numpy.array(self.errors_controller_theta)[:,1])
+                self.line3_3.set_ydata(numpy.array(self.errors_controller_theta)[:,2])
+                
+                # plot error in position
+                self.line4_1.set_xdata(list(self.time_stamps))
+                self.line4_2.set_xdata(list(self.time_stamps))
+                self.line4_3.set_xdata(list(self.time_stamps))
+                self.line4_1.set_ydata(numpy.array(self.errors_controller_xy)[:,0])
+                self.line4_2.set_ydata(numpy.array(self.errors_controller_xy)[:,1])
+                self.line4_3.set_ydata(numpy.array(self.errors_controller_xy)[:,2])
                 
             #    ax_xzplane.plot(xpos, zpos, "go")
                 #
-                self.fig.canvas.draw()
+            self.fig.canvas.draw()
                 
-        self.fig.canvas.draw()
+        #self.fig.canvas.draw_idle()
         return True
 
 
@@ -110,11 +123,12 @@ class ProcessPlotter(object):
         t = 0
         error_controller = numpy.zeros(3)
 
-        self.fig = plt.figure(figsize=(10,16))
-        self.ax_xyplane = self.fig.add_subplot(311)
-        self.ax_xzplane = self.fig.add_subplot(312)
-        self.ax_err_controller_plane = self.fig.add_subplot(313)
-        plt.tight_layout(pad=4.0, w_pad=2.0, h_pad=2.0)
+        self.fig = plt.figure(figsize=(20,16))
+        self.ax_xyplane = self.fig.add_subplot(221)
+        self.ax_xzplane = self.fig.add_subplot(222)
+        self.ax_err_controller_plane = self.fig.add_subplot(223)
+        self.ax_err_xyplane = self.fig.add_subplot(224)
+        plt.tight_layout(pad=4.0, w_pad=2.0, h_pad=3.0)
         
         if enable3d:
             plt.ion()
@@ -131,6 +145,10 @@ class ProcessPlotter(object):
         self.line3_1, = self.ax_err_controller_plane.plot(error_controller, "or") 
         self.line3_2, = self.ax_err_controller_plane.plot(error_controller, "ob") 
         self.line3_3, = self.ax_err_controller_plane.plot(error_controller, "og") 
+        
+        self.line4_1, = self.ax_err_xyplane.plot(0, "or") 
+        self.line4_2, = self.ax_err_xyplane.plot(0, "ob") 
+        self.line4_3, = self.ax_err_xyplane.plot(0, "og") 
         #self.line3_2, = self.ax_err_controller_plane.plot(t, error_controller,"b") 
          
         self.ax_xyplane.set_ylim([-5,5])
@@ -150,6 +168,12 @@ class ProcessPlotter(object):
         self.ax_err_controller_plane.set_title("error - plane")
         self.ax_err_controller_plane.set_xlabel("t")
         self.ax_err_controller_plane.set_ylabel("error")
+        
+        self.ax_err_xyplane.set_ylim([-5,5])
+        self.ax_err_xyplane.set_xlim([0, 15])
+        self.ax_err_xyplane.set_title("error - xy plane")
+        self.ax_err_xyplane.set_xlabel("t")
+        self.ax_err_xyplane.set_ylabel("error")
         
         timer = self.fig.canvas.new_timer(interval=100)
         timer.add_callback(self.call_back)
