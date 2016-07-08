@@ -12,10 +12,14 @@ In contrast to the link above a right handed coordinate system is used.
   <br />
   <br />
   <br />
-
-
+needs numpy
+  <br />
+  <br />
 
 Some remarks:
 Speeding up Matplotlib
 
 http://bastibe.de/2013-05-30-speeding-up-matplotlib.html
+
+
+
